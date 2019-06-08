@@ -1,5 +1,7 @@
 #include <iostream>
+#include <algorithm>
 #include "graph.hpp"
+#include "disjoint_set.hpp"
 
 Node *Graph::createAdjListNode(int value, int weight, Node *head)
 {
@@ -10,6 +12,7 @@ Node *Graph::createAdjListNode(int value, int weight, Node *head)
     return newNode;
 }
 
+
 Graph::Graph(Edge edges[], int nOfEdges, int nOfVertices)
 {
     head = new Node *[nOfVertices]();
@@ -17,7 +20,7 @@ Graph::Graph(Edge edges[], int nOfEdges, int nOfVertices)
     numberOfEdges = nOfEdges;
 
     for (int i = 0; i < nOfVertices; ++i)
-        head[i] = NULL;
+        head[i] = nullptr;
 
     for (int i = 0; i < nOfVertices; ++i)
     {
@@ -27,6 +30,15 @@ Graph::Graph(Edge edges[], int nOfEdges, int nOfVertices)
         head[src] = createAdjListNode(dest, weight, head[src]);
         head[dest] = createAdjListNode(src, weight, head[dest]);
     }
+}
+
+Graph::~Graph()
+{
+    for (int i = 0; i < numberOfVertices; ++i)
+    {
+        delete[] head[i];
+    }
+    delete[] head;
 }
 
 int Graph::getNumberOfVertices()
@@ -39,11 +51,34 @@ int Graph::getNumberOfEdges()
     return numberOfVertices;
 }
 
-Graph::~Graph()
+bool compareWeight(Node *head1, Node *head2)
 {
-    for (int i = 0; i < numberOfVertices; ++i)
+    return (head1->weight < head2->weight);
+}
+
+int Graph::kruskalMST()
+{
+    int mst_wt = 0;
+
+    std::sort(head, sizeof(head) / sizeof(head[0]), compareWeight);
+
+    DisjointSets ds(numberOfVertices);
+
+    for (int i = 0; i < numberOfEdges - 1; i++)
     {
-        delete[] head[i];
+        Node *node = head[i];
+        int u = i;
+        int v = node->value;
+        int set_u = ds.find(u);
+        int set_v = ds.find(v);
+        if (set_u != set_v)
+        {
+            std::cout << u << " - " << v << std::endl;
+            mst_wt += node->weight;
+            ds.merge(set_u, set_v);
+        }
     }
-    delete[] head;
+
+    return mst_wt;
+    return 0;
 }

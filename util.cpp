@@ -3,7 +3,7 @@
 #include <random>
 #include "util.hpp"
 
-int getRandomNumber(int min, int max)
+int getRandomNumber(int min = 1, int max = 20)
 {
     std::random_device rd;
     std::mt19937 gen(rd());

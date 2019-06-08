@@ -25,6 +25,7 @@ public:
     ~Graph();
     int getNumberOfVertices();
     int getNumberOfEdges();
+    int kruskalMST();
 };
 
 #endif

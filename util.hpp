@@ -8,6 +8,6 @@ Graph createCompleteGraph(int n);
 Graph createGridGraph(int n, int m);
 void printList(Node *ptr, int i);
 void createFileForGraph(std::string &name, Graph g);
-int getRandomNumber(int min = 1, int max = 10);
+int getRandomNumber(int min, int max);
 
 #endif

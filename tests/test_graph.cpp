@@ -13,7 +13,7 @@ int main()
             createFileForGraph(pathFileComplete, createCompleteGraph(i));
 
             std::string pathFileGrid = "grid/" + std::to_string(i) + "grid";
-            createFileForGraph(pathFileGrid, createGridGraph(2, i / 2));
+            createFileForGraph(pathFileGrid, createGridGraph(2, i));
         }
     }
     return 0;
