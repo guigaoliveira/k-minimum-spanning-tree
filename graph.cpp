@@ -1,7 +1,7 @@
 #include <iostream>
-#include <algorithm>
 #include "graph.hpp"
 #include "disjoint_set.hpp"
+#include "util.hpp"
 
 Node *Graph::createAdjListNode(int value, int weight, Node *head)
 {
@@ -12,24 +12,34 @@ Node *Graph::createAdjListNode(int value, int weight, Node *head)
     return newNode;
 }
 
+void Graph::addEdge(int src, int dest, int weight)
+{
+    head[src] = createAdjListNode(dest, weight, head[src]);
+    head[dest] = createAdjListNode(src, weight, head[dest]);
+    listEdges[lengthListEdges] = {src, dest, weight};
+    lengthListEdges++;
+}
 
-Graph::Graph(Edge edges[], int nOfEdges, int nOfVertices)
+void Graph::addEdges(Edge edges[])
+{
+    for (int i = 0; i < numberOfVertices; ++i)
+        addEdge(edges[i].src, edges[i].dest, edges[i].weight);
+}
+
+Graph::Graph(int nOfEdges, int nOfVertices)
 {
     head = new Node *[nOfVertices]();
     numberOfVertices = nOfVertices;
     numberOfEdges = nOfEdges;
-
+    listEdges = new Edge[nOfEdges];
+    lengthListEdges = 0;
     for (int i = 0; i < nOfVertices; ++i)
         head[i] = nullptr;
+}
 
-    for (int i = 0; i < nOfVertices; ++i)
-    {
-        int src = edges[i].src;
-        int dest = edges[i].dest;
-        int weight = edges[i].weight;
-        head[src] = createAdjListNode(dest, weight, head[src]);
-        head[dest] = createAdjListNode(src, weight, head[dest]);
-    }
+Graph::Graph(int nOfEdges, int nOfVertices, Edge edges[]) : Graph(nOfEdges, nOfVertices)
+{
+    addEdges(edges);
 }
 
 Graph::~Graph()
@@ -38,6 +48,7 @@ Graph::~Graph()
     {
         delete[] head[i];
     }
+
     delete[] head;
 }
 
@@ -51,34 +62,26 @@ int Graph::getNumberOfEdges()
     return numberOfVertices;
 }
 
-bool compareWeight(Node *head1, Node *head2)
-{
-    return (head1->weight < head2->weight);
-}
-
 int Graph::kruskalMST()
 {
     int mst_wt = 0;
-
-    std::sort(head, sizeof(head) / sizeof(head[0]), compareWeight);
-
+    SortArrayOfNodes(listEdges, lengthListEdges);
     DisjointSets ds(numberOfVertices);
 
-    for (int i = 0; i < numberOfEdges - 1; i++)
+    for (int i = 0; i < numberOfVertices - 1; i++)
     {
-        Node *node = head[i];
-        int u = i;
-        int v = node->value;
+        int u = listEdges[i].src;
+        int v = listEdges[i].dest;
+
         int set_u = ds.find(u);
         int set_v = ds.find(v);
         if (set_u != set_v)
         {
             std::cout << u << " - " << v << std::endl;
-            mst_wt += node->weight;
+            mst_wt += listEdges[i].weight;
             ds.merge(set_u, set_v);
         }
     }
 
     return mst_wt;
-    return 0;
 }

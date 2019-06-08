@@ -29,7 +29,7 @@ Graph createCompleteGraph(int n)
         }
     }
 
-    Graph graph(edges, numberOfEdges, n);
+    Graph graph(numberOfEdges, n, edges);
     return graph;
 }
 
@@ -57,7 +57,7 @@ Graph createGridGraph(int n, int m)
         }
     }
 
-    Graph graph(edges, numberOfEdges, n * m);
+    Graph graph(numberOfEdges, n * m, edges);
     return graph;
 }
 
@@ -84,4 +84,24 @@ void createFileForGraph(std::string &name, Graph g)
     }
 
     file.close();
+}
+
+void SortArrayOfNodes(Edge edges[], int length)
+{
+    int i, j, flag = 1;
+    Edge temp;
+    for (i = length - 1; i > 0 && flag; i--)
+    {
+        flag = 0;
+        for (j = 0; j < i; j++)
+        {
+            if (edges[j].weight > edges[j + 1].weight)
+            {
+                temp = edges[j];
+                edges[j] = edges[j + 1];
+                edges[j + 1] = temp;
+                flag = 1;
+            }
+        }
+    }
 }
