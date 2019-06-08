@@ -26,7 +26,7 @@ void Graph::addEdges(Edge edges[])
         addEdge(edges[i].src, edges[i].dest, edges[i].weight);
 }
 
-Graph::Graph(int nOfEdges, int nOfVertices)
+Graph::Graph(int nOfVertices, int nOfEdges)
 {
     head = new Node *[nOfVertices]();
     numberOfVertices = nOfVertices;
@@ -37,7 +37,7 @@ Graph::Graph(int nOfEdges, int nOfVertices)
         head[i] = nullptr;
 }
 
-Graph::Graph(int nOfEdges, int nOfVertices, Edge edges[]) : Graph(nOfEdges, nOfVertices)
+Graph::Graph(int nOfVertices, int nOfEdges, Edge edges[]) : Graph(nOfVertices, nOfEdges)
 {
     addEdges(edges);
 }
@@ -59,29 +59,32 @@ int Graph::getNumberOfVertices()
 
 int Graph::getNumberOfEdges()
 {
-    return numberOfVertices;
+    return numberOfEdges;
 }
 
-int Graph::kruskalMST()
+Graph Graph::kruskalMST()
 {
-    int mst_wt = 0;
+    Edge *mstListEdges = new Edge[numberOfVertices - 1];
+    int mstListEdgeCount = 0;
+
     SortArrayOfNodes(listEdges, lengthListEdges);
     DisjointSets ds(numberOfVertices);
 
-    for (int i = 0; i < numberOfVertices - 1; i++)
+    for (int i = 0; mstListEdgeCount < numberOfVertices - 1; ++i)
     {
         int u = listEdges[i].src;
         int v = listEdges[i].dest;
-
         int set_u = ds.find(u);
         int set_v = ds.find(v);
+
         if (set_u != set_v)
         {
-            std::cout << u << " - " << v << std::endl;
-            mst_wt += listEdges[i].weight;
+            mstListEdges[mstListEdgeCount] = {u, v, listEdges[i].weight};
             ds.merge(set_u, set_v);
+            mstListEdgeCount++;
         }
     }
 
-    return mst_wt;
+    Graph g(numberOfVertices, mstListEdgeCount, mstListEdges);
+    return g;
 }

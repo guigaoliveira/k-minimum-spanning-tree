@@ -18,19 +18,19 @@ private:
     Node *createAdjListNode(int value, int weight, Node *head);
     int numberOfVertices;
     int numberOfEdges;
-    Edge *listEdges;
-    int lengthListEdges;
 
 public:
+    Edge *listEdges;
+    int lengthListEdges;
     Node **head;
-    Graph(int nOfEdges, int nOfVertices);
-    Graph(int nOfEdges, int nOfVertices, Edge edges[]);
+    Graph(int nOfVertices, int nOfEdges);
+    Graph(int nOfVertices, int nOfEdges, Edge edges[]);
     ~Graph();
     void addEdge(int src, int dest, int weight);
     void addEdges(Edge edges[]);
     int getNumberOfVertices();
     int getNumberOfEdges();
-    int kruskalMST();
+    Graph kruskalMST();
 };
 
 #endif

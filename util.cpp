@@ -29,7 +29,7 @@ Graph createCompleteGraph(int n)
         }
     }
 
-    Graph graph(numberOfEdges, n, edges);
+    Graph graph(n, numberOfEdges, edges);
     return graph;
 }
 
@@ -57,7 +57,7 @@ Graph createGridGraph(int n, int m)
         }
     }
 
-    Graph graph(numberOfEdges, n * m, edges);
+    Graph graph(n * m, numberOfEdges, edges);
     return graph;
 }
 
