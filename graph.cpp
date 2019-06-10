@@ -6,6 +6,42 @@
 
 template class Heap<Mst>;
 
+Graph::Graph(int nOfVertices, int nOfEdges)
+{
+    numberOfNodes = nOfVertices;
+    head = new Node *[numberOfNodes]();
+    numberOfEdges = nOfEdges;
+    listEdges = new Edge[nOfEdges];
+    lengthListEdges = 0;
+    for (int i = 0; i < numberOfNodes; ++i)
+        head[i] = nullptr;
+}
+
+Graph::Graph(int nOfVertices, int nOfEdges, Edge edges[]) : Graph(nOfVertices, nOfEdges)
+{
+    addEdges(edges);
+}
+
+Graph::~Graph()
+{
+    for (int i = 0; i < numberOfNodes; ++i)
+    {
+        delete[] head[i];
+    }
+
+    delete[] head;
+}
+Graph::Graph(const Graph &g2) : numberOfEdges(g2.numberOfEdges),
+                                numberOfNodes(g2.numberOfNodes),
+                                listEdges(g2.numberOfEdges ? new Edge[g2.numberOfEdges] : nullptr),
+                                lengthListEdges(g2.lengthListEdges)
+{
+    std::copy(g2.listEdges, g2.listEdges + numberOfEdges, listEdges);
+    head = new Node *[numberOfNodes]();
+    for (int i = 0; i < numberOfNodes; ++i)
+        head[i] = g2.head[i];
+}
+
 Node *Graph::createAdjListNode(int value, int weight, Node *head)
 {
     Node *newNode = new Node;
@@ -25,34 +61,8 @@ void Graph::addEdge(int src, int dest, int weight, int state)
 
 void Graph::addEdges(Edge edges[])
 {
-    for (int i = 0; i < numberOfNodes; ++i)
+    for (int i = 0; i < numberOfEdges; ++i)
         addEdge(edges[i].src, edges[i].dest, edges[i].weight, edges[i].state);
-}
-
-Graph::Graph(int nOfVertices, int nOfEdges)
-{
-    head = new Node *[nOfVertices]();
-    numberOfNodes = nOfVertices;
-    numberOfEdges = nOfEdges;
-    listEdges = new Edge[nOfEdges];
-    lengthListEdges = 0;
-    for (int i = 0; i < nOfVertices; ++i)
-        head[i] = nullptr;
-}
-
-Graph::Graph(int nOfVertices, int nOfEdges, Edge edges[]) : Graph(nOfVertices, nOfEdges)
-{
-    addEdges(edges);
-}
-
-Graph::~Graph()
-{
-    for (int i = 0; i < numberOfNodes; ++i)
-    {
-        delete[] head[i];
-    }
-
-    delete[] head;
 }
 
 int Graph::getNumberOfNodes()

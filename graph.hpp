@@ -22,12 +22,13 @@ private:
     int numberOfEdges;
 
 public:
-    Edge *listEdges;
-    int lengthListEdges;
-    Node **head;
     Graph(int nOfVertices, int nOfEdges);
     Graph(int nOfVertices, int nOfEdges, Edge edges[]);
     ~Graph();
+    Graph(const Graph &g2);
+    Edge *listEdges;
+    int lengthListEdges;
+    Node **head;
     void addEdge(int src, int dest, int weight, int state = -1);
     void addEdges(Edge edges[]);
     int getNumberOfNodes();
