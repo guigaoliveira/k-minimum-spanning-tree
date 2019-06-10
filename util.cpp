@@ -21,11 +21,8 @@ Graph createCompleteGraph(int n)
     {
         for (int j = i + 1; j < n; ++j)
         {
-            if (i != j)
-            {
-                edges[count] = {i, j, getRandomNumber()};
-                count++;
-            }
+            edges[count] = {i, j, getRandomNumber(), -1};
+            count++;
         }
     }
 
@@ -46,12 +43,12 @@ Graph createGridGraph(int n, int m)
             int nodeActual = i * m + j;
             if (j + 1 != m)
             {
-                edges[count] = {nodeActual, nodeActual + 1, getRandomNumber()};
+                edges[count] = {nodeActual, nodeActual + 1, getRandomNumber(), -1};
                 count++;
             }
             if (i + 1 != n)
             {
-                edges[count] = {nodeActual, nodeActual + m, getRandomNumber()};
+                edges[count] = {nodeActual, nodeActual + m, getRandomNumber(), -1};
                 count++;
             }
         }
@@ -69,11 +66,11 @@ void createFileForGraph(std::string &name, Graph g)
     if (!file.is_open())
         return;
 
-    int numberOfVertices = g.getNumberOfVertices();
+    int numberOfNodes = g.getNumberOfNodes();
 
-    file << numberOfVertices << "\n";
+    file << numberOfNodes << "\n";
 
-    for (int i = 0; i < numberOfVertices; ++i)
+    for (int i = 0; i < numberOfNodes; ++i)
     {
         Node *node = g.head[i];
         while (node != nullptr)
@@ -86,7 +83,7 @@ void createFileForGraph(std::string &name, Graph g)
     file.close();
 }
 
-void SortArrayOfNodes(Edge edges[], int length)
+void sortArrayOfNodes(Edge edges[], int length)
 {
     int i, j, flag = 1;
     Edge temp;

@@ -1,12 +1,11 @@
 #include <iostream>
-#include <vector>
 
 template <class T>
 class Heap
 {
     int sizeLimit;
     int sizeReal;
-    int *list;
+    T *list;
 
     void bubbleUp();
     void bubbleDown();

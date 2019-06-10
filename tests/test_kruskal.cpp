@@ -27,7 +27,7 @@ int main()
 
     std::cout << "Arestas da MST sao \n";
 
-    Graph g2 = g.kruskalMST();
+    Graph g2 = g.kruskalMST().graph;
 
     for (int i = 0; i < g2.getNumberOfEdges(); ++i)
     {

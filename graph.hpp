@@ -9,14 +9,16 @@ struct Node
 
 struct Edge
 {
-    int src, dest, weight;
+    int src, dest, weight, state;
 };
+
+class Mst;
 
 class Graph
 {
 private:
     Node *createAdjListNode(int value, int weight, Node *head);
-    int numberOfVertices;
+    int numberOfNodes;
     int numberOfEdges;
 
 public:
@@ -26,11 +28,43 @@ public:
     Graph(int nOfVertices, int nOfEdges);
     Graph(int nOfVertices, int nOfEdges, Edge edges[]);
     ~Graph();
-    void addEdge(int src, int dest, int weight);
+    void addEdge(int src, int dest, int weight, int state = -1);
     void addEdges(Edge edges[]);
-    int getNumberOfVertices();
+    int getNumberOfNodes();
     int getNumberOfEdges();
-    Graph kruskalMST();
+    Mst *kruskalMST();
+    void generateKSpanningTrees(int k);
+};
+
+class Mst
+{
+public:
+    Graph *graph;
+    int totalWeight;
+    bool isConnected;
+
+    Mst(int t = 0, bool c = 0) : totalWeight(t), isConnected(c)
+    {
+        graph = new Graph(0, 0);
+    }
+    Mst(Graph *g, int t = 0, bool c = 0) : totalWeight(t), isConnected(c)
+    {
+        graph = g;
+    }
+    ~Mst()
+    {
+        delete graph;
+    }
+    Mst(Graph *g, int t, int c)
+    {
+        graph = g;
+        totalWeight = t;
+        isConnected = c;
+    }
+    bool operator<(Mst const &mst2)
+    {
+        return totalWeight < mst2.totalWeight;
+    }
 };
 
 #endif
