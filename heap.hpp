@@ -16,6 +16,7 @@ class Heap
 
 public:
     explicit Heap(int listSize);
+    Heap(const Heap &heap2);
     void insert(T);
     T remove();
     int getSize();
@@ -27,6 +28,12 @@ Heap<T>::Heap(int listMaxSize)
     sizeLimit = listMaxSize;
     list = new T[sizeLimit];
     sizeReal = 0;
+}
+
+template <class T>
+Heap<T>::Heap(const Heap &heap2) : sizeLimit(heap2.sizeLimit), sizeReal(heap2.sizeReal)
+{
+    std::copy(heap2.list, heap2.list + sizeLimit, list);
 }
 
 template <class T>
@@ -88,6 +95,8 @@ void Heap<T>::bubbleUp()
 template <class T>
 T Heap<T>::remove()
 {
+    if (!sizeReal)
+        return false;
     int child = sizeReal - 1;
     swap(child, 0);
 

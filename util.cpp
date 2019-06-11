@@ -21,7 +21,7 @@ Graph createCompleteGraph(int n)
     {
         for (int j = i + 1; j < n; ++j)
         {
-            edges[count] = {i, j, getRandomNumber(), -1};
+            edges[count] = {i, j, getRandomNumber(), EdgeState::OPEN};
             count++;
         }
     }
@@ -43,12 +43,12 @@ Graph createGridGraph(int n, int m)
             int nodeActual = i * m + j;
             if (j + 1 != m)
             {
-                edges[count] = {nodeActual, nodeActual + 1, getRandomNumber(), -1};
+                edges[count] = {nodeActual, nodeActual + 1, getRandomNumber(), EdgeState::OPEN};
                 count++;
             }
             if (i + 1 != n)
             {
-                edges[count] = {nodeActual, nodeActual + m, getRandomNumber(), -1};
+                edges[count] = {nodeActual, nodeActual + m, getRandomNumber(), EdgeState::OPEN};
                 count++;
             }
         }

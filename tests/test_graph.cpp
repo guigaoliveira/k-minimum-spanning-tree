@@ -20,7 +20,7 @@ int main()
     }
     std::cout << "Arquivos salvos na pastas /completo e /grid!"
               << "\n";
-    Edge e[] = {{0, 1, 4, -1}, {2, 3, 2, -1}};
+    Edge e[] = {{0, 1, 4, EdgeState::OPEN}, {2, 3, 2, EdgeState::OPEN}};
     Graph g(4, 2, e);
     Graph g2 = g;
 

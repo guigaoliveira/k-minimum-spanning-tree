@@ -27,12 +27,13 @@ int main()
 
     std::cout << "Arestas da MST sao \n";
 
-    Graph g2 = g.kruskalMST().graph;
+    Mst mst = g.kruskalMST();
 
-    for (int i = 0; i < g2.getNumberOfEdges(); ++i)
+    for (int i = 0; i < mst.graph.getNumberOfEdges(); ++i)
     {
-        std::cout << g2.listEdges[i].src << " - " << g2.listEdges[i].dest << "\n";
+        std::cout << mst.graph.listEdges[i].src << " - " << mst.graph.listEdges[i].dest << "\n";
     }
 
+    std::cout << "Custo: " << mst.totalWeight << "\n";
     return 0;
 }
