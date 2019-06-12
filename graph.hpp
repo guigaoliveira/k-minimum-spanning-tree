@@ -24,8 +24,6 @@ private:
 public:
     explicit Graph(int nOfVertices, int nOfEdges, Edge edges[]);
     Graph(int nOfVertices, int nOfEdges);
-    // Graph(const Graph &g2);
-    ~Graph();
     Edge *listEdges;
     Node **head;
     int lengthListEdges;
@@ -46,14 +44,10 @@ public:
     Graph graph;
     int totalWeight;
     bool isConnected;
-
-    Mst(Graph &g, int t = 0, bool c = 0) : graph(g), totalWeight(t), isConnected(c)
+    Mst(Graph &g, int t, bool c) : graph(g), totalWeight(t), isConnected(c)
     {
     }
     Mst(int t = 0, bool c = 0) : graph(Graph(0, 0)), totalWeight(t), isConnected(c)
-    {
-    }
-    Mst(Graph &g, int t, int c) : graph(g), totalWeight(t), isConnected(c)
     {
     }
     ~Mst()

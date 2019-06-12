@@ -13,7 +13,7 @@ int main()
         heap.insert(arr[i]);
     }
     std::cout << "Heap Min \n";
-    while (heap.getSize() > 0)
+    while (heap.size() > 0)
     {
         std::cout << heap.remove() << "\n";
     }

@@ -19,7 +19,7 @@ public:
     Heap(const Heap &heap2);
     void insert(T);
     T remove();
-    int getSize();
+    int size();
 };
 
 template <class T>
@@ -37,7 +37,7 @@ Heap<T>::Heap(const Heap &heap2) : sizeLimit(heap2.sizeLimit), sizeReal(heap2.si
 }
 
 template <class T>
-int Heap<T>::getSize()
+int Heap<T>::size()
 {
     return sizeReal;
 }
