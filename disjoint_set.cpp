@@ -20,7 +20,6 @@ int DisjointSets::find(int u)
     {
         parent[u] = find(parent[u]);
     }
-
     return parent[u];
 }
 

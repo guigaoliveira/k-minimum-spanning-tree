@@ -21,7 +21,7 @@ Graph createCompleteGraph(int n)
     {
         for (int j = i + 1; j < n; ++j)
         {
-            edges[count] = {i, j, getRandomNumber(), EdgeState::OPEN};
+            edges[count] = {i, j, getRandomNumber()};
             count++;
         }
     }
@@ -43,12 +43,12 @@ Graph createGridGraph(int n, int m)
             int nodeActual = i * m + j;
             if (j + 1 != m)
             {
-                edges[count] = {nodeActual, nodeActual + 1, getRandomNumber(), EdgeState::OPEN};
+                edges[count] = {nodeActual, nodeActual + 1, getRandomNumber()};
                 count++;
             }
             if (i + 1 != n)
             {
-                edges[count] = {nodeActual, nodeActual + m, getRandomNumber(), EdgeState::OPEN};
+                edges[count] = {nodeActual, nodeActual + m, getRandomNumber()};
                 count++;
             }
         }
@@ -101,4 +101,9 @@ void sortArrayOfNodes(Edge edges[], int length)
             }
         }
     }
+}
+
+int hashCode(int a, int b)
+{
+    return a >= b ? a * a + a + b : a + b * b;
 }

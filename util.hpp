@@ -10,5 +10,6 @@ void printList(Node *ptr, int i);
 void createFileForGraph(std::string &name, Graph g);
 int getRandomNumber(int min, int max);
 void sortArrayOfNodes(Edge edges[], int length);
+int hashCode(int a, int b);
 
 #endif

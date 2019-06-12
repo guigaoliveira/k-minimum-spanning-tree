@@ -7,17 +7,9 @@ struct Node
     Node *next;
 };
 
-enum class EdgeState
-{
-    OPEN,
-    INCLUDED,
-    EXCLUDED
-};
-
 struct Edge
 {
     int src, dest, weight;
-    EdgeState state;
 };
 
 class Mst;
@@ -32,12 +24,15 @@ private:
 public:
     explicit Graph(int nOfVertices, int nOfEdges, Edge edges[]);
     Graph(int nOfVertices, int nOfEdges);
-    Graph(const Graph &g2);
+    // Graph(const Graph &g2);
     ~Graph();
     Edge *listEdges;
-    int lengthListEdges;
     Node **head;
-    void addEdge(int src, int dest, int weight, EdgeState state = EdgeState::OPEN);
+    int lengthListEdges;
+    bool *excludedList;
+    bool *includedList;
+    int hashLengthMax;
+    void addEdge(int src, int dest, int weight);
     void addEdges(Edge edges[]);
     int getNumberOfNodes();
     int getNumberOfEdges();
