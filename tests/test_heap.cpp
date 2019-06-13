@@ -3,7 +3,7 @@
 
 template class Heap<int>;
 
-int test_heap()
+int main()
 {
     int arr[] = {7, 2, 3, 4, 6, 5, 10};
     Heap<int> heap(100);

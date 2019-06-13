@@ -3,6 +3,13 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
+enum EdgeState
+{
+    OPEN,
+    INCLUDED,
+    EXCLUDED,
+};
+
 struct Node
 {
     int value, weight;
@@ -12,6 +19,7 @@ struct Node
 struct Edge
 {
     int src, dest, weight;
+    EdgeState state;
 };
 
 class Mst;
@@ -24,8 +32,8 @@ public:
     Edge *listEdges;
     Node **head;
     int lengthListEdges;
-    bool *excludedList;
-    bool *includedList;
+    // bool *excludedList;
+    // bool *includedList;
     int hashLengthMax;
     Node *createAdjListNode(int value, int weight, Node *next);
     int numberOfNodes;
@@ -36,8 +44,6 @@ public:
     int getNumberOfEdges();
     Mst kruskalMST();
     void generateKSpanningTrees();
-    Graph(const Graph &g2);
-    ~Graph();
 };
 
 class Mst
@@ -45,22 +51,24 @@ class Mst
 public:
     Graph currentGraph;
     //Graph mstGraph;
+    int countEdges;
     int totalWeight;
     bool isConnected;
     /* Mst(Graph &gcurr, Graph &gmst, int t, bool c) : currentGraph(gcurr),
                                                     mstGraph(gmst), totalWeight(t), isConnected(c)
     {
     } */
-    Mst(Graph &gcurr, int t, bool c) : currentGraph(gcurr),
-                                       totalWeight(t), isConnected(c)
+    Mst(Graph &gcurr, int t, int nEdges, bool c) : currentGraph(gcurr),
+                                                   countEdges(nEdges),
+                                                   totalWeight(t), isConnected(c)
     {
     }
-    Mst(const Mst &mst) : currentGraph(mst.currentGraph),
+    /*     Mst(const Mst &mst) : currentGraph(mst.currentGraph),
                           //mstGraph(mst.mstGraph),
                           totalWeight(mst.totalWeight),
                           isConnected(mst.isConnected)
     {
-    }
+    } */
 
     ~Mst()
     {

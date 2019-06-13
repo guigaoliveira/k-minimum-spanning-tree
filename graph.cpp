@@ -20,8 +20,6 @@ Graph::Graph(int nOfNodes, int nOfEdges)
     listEdges = new Edge[nOfEdges];
     lengthListEdges = 0;
     hashLengthMax = hashCode(nOfNodes + nOfEdges, nOfNodes + nOfEdges);
-    excludedList = new bool[hashLengthMax]{false};
-    includedList = new bool[hashLengthMax]{false};
     for (int i = 0; i < numberOfNodes; ++i)
         head[i] = nullptr;
 }
@@ -29,29 +27,6 @@ Graph::Graph(int nOfNodes, int nOfEdges)
 Graph::Graph(int nOfVertices, int nOfEdges, Edge edges[]) : Graph(nOfVertices, nOfEdges)
 {
     addEdges(edges);
-}
-Graph::~Graph()
-{
-    for (int i = 0; i < numberOfNodes; ++i)
-    {
-        delete[] head[i];
-    }
-    delete[] head;
-    delete[] listEdges;
-}
-Graph::Graph(const Graph &g2) : numberOfNodes(g2.numberOfNodes),
-                                numberOfEdges(g2.numberOfEdges),
-                                listEdges(g2.numberOfEdges ? new Edge[g2.numberOfEdges] : nullptr),
-                                head(g2.numberOfNodes ? new Node *[g2.numberOfNodes]() : nullptr),
-                                lengthListEdges(g2.lengthListEdges),
-                                excludedList(g2.hashLengthMax ? new bool[g2.hashLengthMax] : nullptr),
-                                includedList(g2.hashLengthMax ? new bool[g2.hashLengthMax] : nullptr),
-                                hashLengthMax(g2.hashLengthMax)
-{
-    std::copy(g2.listEdges, g2.listEdges + numberOfEdges, listEdges);
-    std::copy(g2.head, g2.head + numberOfNodes, head);
-    std::copy(g2.excludedList, g2.excludedList + hashLengthMax, excludedList);
-    std::copy(g2.includedList, g2.includedList + hashLengthMax, includedList);
 }
 
 Node *Graph::createAdjListNode(int value, int weight, Node *next)
@@ -66,7 +41,7 @@ Node *Graph::createAdjListNode(int value, int weight, Node *next)
 void Graph::addEdge(int src, int dest, int weight)
 {
     head[src] = createAdjListNode(dest, weight, head[src]);
-    listEdges[lengthListEdges] = {src, dest, weight};
+    listEdges[lengthListEdges] = {src, dest, weight, EdgeState::OPEN};
     lengthListEdges++;
 }
 
@@ -103,14 +78,17 @@ Mst Graph::kruskalMST()
         int v = listEdgesSorted[i].dest;
         int set_u = ds.find(u);
         int set_v = ds.find(v);
-        if (excludedList[hashCode(u, v)])
+
+        // std::cout << "state: " << listEdgesSorted[i].state << "\n";
+
+        if (listEdgesSorted[i].state == EdgeState::EXCLUDED)
         {
             continue;
         }
         if (set_u != set_v)
         {
             int weight = listEdgesSorted[i].weight;
-            mstListEdges[countEdges] = {u, v, weight};
+            mstListEdges[countEdges] = {u, v, weight, listEdgesSorted[i].state};
             totalWeight += weight;
             countEdges++;
             if (!mstNodesMarked[u])
@@ -127,37 +105,40 @@ Mst Graph::kruskalMST()
         }
     }
 
-    //Graph *g = new Graph(countNodes, countEdges, mstListEdges);
-    Mst mst(*this, totalWeight, numberOfNodes == countNodes);
+    Mst mst(*this, totalWeight, countEdges, numberOfNodes == countNodes);
     delete[] mstNodesMarked;
     delete[] mstListEdges;
     return mst;
 }
 
-bool compare(Mst i, Mst j) { return i.totalWeight > j.totalWeight; }
+bool compare(Mst i, Mst j) { return i.totalWeight < j.totalWeight; }
 
 void partition(Mst &Ps, std::vector<Mst> &heap)
 {
-    Graph p = Ps.currentGraph;
-    Graph p1 = p;
-    Graph p2 = p;
-    for (int i = 0; i < p.getNumberOfEdges(); ++i)
+    Graph p = Graph(Ps.currentGraph.numberOfNodes, Ps.currentGraph.numberOfEdges, Ps.currentGraph.listEdges);
+    Graph p1 = Graph(Ps.currentGraph.numberOfNodes, Ps.currentGraph.numberOfEdges, Ps.currentGraph.listEdges);
+    Graph p2 = Graph(Ps.currentGraph.numberOfNodes, Ps.currentGraph.numberOfEdges, Ps.currentGraph.listEdges);
+
+    for (int i = 0; i < p.numberOfEdges; ++i)
     {
         Edge edge = p.listEdges[i];
-        int hashCodeEdge = hashCode(edge.src, edge.dest);
-        if (!p.includedList[hashCodeEdge] && !p.excludedList[hashCodeEdge])
+
+        if (edge.state == EdgeState::OPEN)
         {
-            p1.excludedList[hashCodeEdge] = true;
-            p2.includedList[hashCodeEdge] = true;
+            p1.listEdges[i].state = EdgeState::EXCLUDED;
         }
+
         Mst p1Mst = p1.kruskalMST();
-        std::cout << p1Mst.totalWeight;
+
         if (p1Mst.isConnected)
         {
+            std::cout << p1Mst.totalWeight;
             heap.push_back(p1Mst);
         }
+
+        p2.listEdges[i].state = EdgeState::INCLUDED;
+
         p1 = p2;
-        std::cout << p1.excludedList[hashCodeEdge] << p1.includedList[hashCodeEdge];
     }
 }
 
@@ -166,12 +147,8 @@ void Graph::generateKSpanningTrees()
     std::vector<Mst> heap;
     Mst graphMst = kruskalMST();
     heap.push_back(graphMst);
-    Mst Ps = heap.front();
-    while (heap.size())
-    {
-        Ps = *std::min_element(std::begin(heap), std::end(heap), compare);
-        std::cout << Ps.totalWeight << std::endl;
-        heap.erase(std::min_element(std::begin(heap), std::end(heap), compare));
-        partition(Ps, heap);
-    }
+
+    Mst Ps = *std::min_element(std::begin(heap), std::end(heap), compare);
+    heap.erase(std::min_element(std::begin(heap), std::end(heap), compare));
+    partition(Ps, heap);
 }
