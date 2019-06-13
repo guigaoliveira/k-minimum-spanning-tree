@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
@@ -16,13 +18,8 @@ class Mst;
 
 class Graph
 {
-private:
-    Node *createAdjListNode(int value, int weight, Node *next);
-    int numberOfNodes;
-    int numberOfEdges;
-
 public:
-    explicit Graph(int nOfVertices, int nOfEdges, Edge edges[]);
+    Graph(int nOfVertices, int nOfEdges, Edge edges[]);
     Graph(int nOfVertices, int nOfEdges);
     Edge *listEdges;
     Node **head;
@@ -30,26 +27,41 @@ public:
     bool *excludedList;
     bool *includedList;
     int hashLengthMax;
+    Node *createAdjListNode(int value, int weight, Node *next);
+    int numberOfNodes;
+    int numberOfEdges;
     void addEdge(int src, int dest, int weight);
     void addEdges(Edge edges[]);
     int getNumberOfNodes();
     int getNumberOfEdges();
     Mst kruskalMST();
-    void generateKSpanningTrees(int k);
+    void generateKSpanningTrees();
+    Graph(const Graph &g2);
+    ~Graph();
 };
 
 class Mst
 {
 public:
-    Graph graph;
+    Graph currentGraph;
+    //Graph mstGraph;
     int totalWeight;
     bool isConnected;
-    Mst(Graph &g, int t, bool c) : graph(g), totalWeight(t), isConnected(c)
+    /* Mst(Graph &gcurr, Graph &gmst, int t, bool c) : currentGraph(gcurr),
+                                                    mstGraph(gmst), totalWeight(t), isConnected(c)
+    {
+    } */
+    Mst(Graph &gcurr, int t, bool c) : currentGraph(gcurr),
+                                       totalWeight(t), isConnected(c)
     {
     }
-    Mst(int t = 0, bool c = 0) : graph(Graph(0, 0)), totalWeight(t), isConnected(c)
+    Mst(const Mst &mst) : currentGraph(mst.currentGraph),
+                          //mstGraph(mst.mstGraph),
+                          totalWeight(mst.totalWeight),
+                          isConnected(mst.isConnected)
     {
     }
+
     ~Mst()
     {
     }

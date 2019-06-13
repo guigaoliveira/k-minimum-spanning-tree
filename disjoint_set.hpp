@@ -5,7 +5,7 @@ private:
     int n;
 
 public:
-    explicit DisjointSets(int n);
+    DisjointSets(int n);
     int find(int u);
     void merge(int x, int y);
 };

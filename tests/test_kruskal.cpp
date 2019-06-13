@@ -4,7 +4,7 @@
 // Driver program to test above functions
 int main()
 {
-    /* Let us create above shown weighted 
+    /* Let us create above shown weighted
        and unidrected graph */
     int V = 9, E = 14;
     Graph g(V, E);
@@ -29,9 +29,10 @@ int main()
 
     Mst mst = g.kruskalMST();
 
-    for (int i = 0; i < mst.graph.getNumberOfEdges(); ++i)
+    for (int i = 0; i < mst.currentGraph.getNumberOfEdges(); ++i)
     {
-        std::cout << mst.graph.listEdges[i].src << " - " << mst.graph.listEdges[i].dest << "\n";
+        std::cout << mst.currentGraph.listEdges[i].src
+                  << " - " << mst.currentGraph.listEdges[i].dest << "\n";
     }
 
     std::cout << "Custo: " << mst.totalWeight << "\n";

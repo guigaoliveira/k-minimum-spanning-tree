@@ -83,8 +83,11 @@ void createFileForGraph(std::string &name, Graph g)
     file.close();
 }
 
-void sortArrayOfNodes(Edge edges[], int length)
+Edge *sortArrayOfNodes(Edge edges[], int length)
 {
+    Edge *edgesCopy = new Edge[length];
+    std::copy(edges, edges + length, edgesCopy);
+
     int i, j, flag = 1;
     Edge temp;
     for (i = length - 1; i > 0 && flag; i--)
@@ -92,15 +95,16 @@ void sortArrayOfNodes(Edge edges[], int length)
         flag = 0;
         for (j = 0; j < i; j++)
         {
-            if (edges[j].weight > edges[j + 1].weight)
+            if (edgesCopy[j].weight > edgesCopy[j + 1].weight)
             {
-                temp = edges[j];
-                edges[j] = edges[j + 1];
-                edges[j + 1] = temp;
+                temp = edgesCopy[j];
+                edgesCopy[j] = edgesCopy[j + 1];
+                edgesCopy[j + 1] = temp;
                 flag = 1;
             }
         }
     }
+    return edgesCopy;
 }
 
 int hashCode(int a, int b)

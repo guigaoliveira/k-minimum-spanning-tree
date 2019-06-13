@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <iterator>
 
-/* 
+/*
 template class Heap<Mst>;
  */
 Graph::Graph(int nOfNodes, int nOfEdges)
@@ -29,6 +29,29 @@ Graph::Graph(int nOfNodes, int nOfEdges)
 Graph::Graph(int nOfVertices, int nOfEdges, Edge edges[]) : Graph(nOfVertices, nOfEdges)
 {
     addEdges(edges);
+}
+Graph::~Graph()
+{
+    for (int i = 0; i < numberOfNodes; ++i)
+    {
+        delete[] head[i];
+    }
+    delete[] head;
+    delete[] listEdges;
+}
+Graph::Graph(const Graph &g2) : numberOfNodes(g2.numberOfNodes),
+                                numberOfEdges(g2.numberOfEdges),
+                                listEdges(g2.numberOfEdges ? new Edge[g2.numberOfEdges] : nullptr),
+                                head(g2.numberOfNodes ? new Node *[g2.numberOfNodes]() : nullptr),
+                                lengthListEdges(g2.lengthListEdges),
+                                excludedList(g2.hashLengthMax ? new bool[g2.hashLengthMax] : nullptr),
+                                includedList(g2.hashLengthMax ? new bool[g2.hashLengthMax] : nullptr),
+                                hashLengthMax(g2.hashLengthMax)
+{
+    std::copy(g2.listEdges, g2.listEdges + numberOfEdges, listEdges);
+    std::copy(g2.head, g2.head + numberOfNodes, head);
+    std::copy(g2.excludedList, g2.excludedList + hashLengthMax, excludedList);
+    std::copy(g2.includedList, g2.includedList + hashLengthMax, includedList);
 }
 
 Node *Graph::createAdjListNode(int value, int weight, Node *next)
@@ -65,43 +88,30 @@ int Graph::getNumberOfEdges()
 
 Mst Graph::kruskalMST()
 {
-    /*  std::cout << "[---- Novo kruskal ----]"
-              << "\n"; */
     int totalWeight = 0;
     int countEdges = 0;
     int countNodes = 0;
+    Edge *mstListEdges = new Edge[numberOfNodes - 1];
     bool *mstNodesMarked = new bool[numberOfNodes - 1]{false};
 
-    // std::cout << "Quantidade de arestas: " << numberOfEdges << "\n";
-    Edge *listEdgesTmp = new Edge[lengthListEdges];
-    std::copy(listEdges, listEdges + lengthListEdges, listEdgesTmp);
-    sortArrayOfNodes(listEdgesTmp, lengthListEdges);
+    Edge *listEdgesSorted = sortArrayOfNodes(listEdges, lengthListEdges);
     DisjointSets ds(numberOfNodes);
-    for (int i = 0; i < numberOfEdges; ++i)
+
+    for (int i = 0; i < lengthListEdges; ++i)
     {
-        int u = listEdgesTmp[i].src;
-        int v = listEdgesTmp[i].dest;
+        int u = listEdgesSorted[i].src;
+        int v = listEdgesSorted[i].dest;
         int set_u = ds.find(u);
         int set_v = ds.find(v);
-        // std::cout << "h: " << excludedList[hashCode(u, v)] << "\n";
-        /*  std::cout << "---"
-                  << "\n"; */
-        // std::cout << "hashCode: " << excludedList[hashCode(u, v)] << "\n";
-        /* std::cout << "u: " << u << "\n";
-        std::cout << "v: " << v << "\n";
-        std::cout << "set_u: " << set_u << "\n";
-        std::cout << "set_v: " << set_v << "\n"; */
-
         if (excludedList[hashCode(u, v)])
         {
-            std::cout << "(" << u << ", " << v << ")"
-                      << "\n";
             continue;
         }
         if (set_u != set_v)
         {
-            ds.merge(set_u, set_v);
-            totalWeight += listEdgesTmp[i].weight;
+            int weight = listEdgesSorted[i].weight;
+            mstListEdges[countEdges] = {u, v, weight};
+            totalWeight += weight;
             countEdges++;
             if (!mstNodesMarked[u])
             {
@@ -113,30 +123,22 @@ Mst Graph::kruskalMST()
                 mstNodesMarked[v] = true;
                 countNodes++;
             }
+            ds.merge(set_u, set_v);
         }
     }
-    /*  std::cout << "countNodes: " << countNodes << "\n";
-    std::cout << "countEdges: " << countEdges << "\n";
-    std::cout << "Peso total: " << totalWeight << "\n";
-    std::cout << "Eh conectado: " << (int)(numberOfNodes == countNodes) << "\n"; */
 
-    // Graph g(countNodes + 1, countEdges, mstListEdges);
-    /*     std::cout << "countNodes: " << countNodes << "\n";
-    std::cout << "numberOfNodes: " << numberOfNodes << "\n";
-    std::cout << "numberOfNodes == countNodes: " << (int)(numberOfNodes == countNodes) << "\n";
-    std::cout << "Total: " << totalWeight << "\n"; */
-    /* std::cout << "countNodes: " << countNodes << "\n";
-    std::cout << "countEdges: " << countEdges << "\n"; */
-    std::cout << totalWeight << "\n";
+    //Graph *g = new Graph(countNodes, countEdges, mstListEdges);
     Mst mst(*this, totalWeight, numberOfNodes == countNodes);
     delete[] mstNodesMarked;
+    delete[] mstListEdges;
     return mst;
 }
+
 bool compare(Mst i, Mst j) { return i.totalWeight > j.totalWeight; }
 
-void partition(Mst Ps, std::vector<Mst> &heap)
+void partition(Mst &Ps, std::vector<Mst> &heap)
 {
-    Graph p = Ps.graph;
+    Graph p = Ps.currentGraph;
     Graph p1 = p;
     Graph p2 = p;
     for (int i = 0; i < p.getNumberOfEdges(); ++i)
@@ -149,20 +151,23 @@ void partition(Mst Ps, std::vector<Mst> &heap)
             p2.includedList[hashCodeEdge] = true;
         }
         Mst p1Mst = p1.kruskalMST();
+        std::cout << p1Mst.totalWeight;
         if (p1Mst.isConnected)
         {
             heap.push_back(p1Mst);
         }
         p1 = p2;
+        std::cout << p1.excludedList[hashCodeEdge] << p1.includedList[hashCodeEdge];
     }
 }
-void Graph::generateKSpanningTrees(int k)
+
+void Graph::generateKSpanningTrees()
 {
     std::vector<Mst> heap;
     Mst graphMst = kruskalMST();
     heap.push_back(graphMst);
     Mst Ps = heap.front();
-    while (heap.size() != 0)
+    while (heap.size())
     {
         Ps = *std::min_element(std::begin(heap), std::end(heap), compare);
         std::cout << Ps.totalWeight << std::endl;

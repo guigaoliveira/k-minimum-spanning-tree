@@ -13,6 +13,8 @@ int main()
         {2, 4, 7}};
 
     Graph g(5, 6, edges);
-    g.generateKSpanningTrees(125);
+
+    g.generateKSpanningTrees();
+
     return 0;
 }
