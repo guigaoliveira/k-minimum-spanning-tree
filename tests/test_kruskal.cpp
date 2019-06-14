@@ -1,5 +1,5 @@
-#include <iostream>
 #include "../graph.hpp"
+#include "../util.hpp"
 
 // Driver program to test above functions
 int main()
@@ -27,9 +27,9 @@ int main()
 
     std::cout << "Arestas da MST sao \n";
 
-    Mst mst = g.kruskalMST();
+    Mst mst = kruskalMST(g);
 
-    for (int i = 0; i < mst.currentGraph.getNumberOfEdges(); ++i)
+    for (int i = 0; i < mst.currentGraph.numberOfEdges; ++i)
     {
         std::cout << mst.currentGraph.listEdges[i].src
                   << " - " << mst.currentGraph.listEdges[i].dest << "\n";

@@ -7,5 +7,5 @@ private:
 public:
     DisjointSets(int n);
     int find(int u);
-    void merge(int x, int y);
+    void doUnion(int x, int y);
 };

@@ -12,9 +12,9 @@ int main()
         {1, 4, 6},
         {2, 4, 7}};
 
-    Graph g(5, 6, edges);
+    Graph g(5, 6, edges, "mst", "msts");
 
-    g.generateKSpanningTrees();
+    generateKSpanningTrees(g);
 
     return 0;
 }

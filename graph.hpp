@@ -1,7 +1,7 @@
-#include <algorithm>
-
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
+
+#include <iostream>
 
 enum EdgeState
 {
@@ -27,48 +27,54 @@ class Mst;
 class Graph
 {
 public:
-    Graph(int nOfVertices, int nOfEdges, Edge edges[]);
-    Graph(int nOfVertices, int nOfEdges);
     Edge *listEdges;
     Node **head;
     int lengthListEdges;
-    // bool *excludedList;
-    // bool *includedList;
-    int hashLengthMax;
-    Node *createAdjListNode(int value, int weight, Node *next);
     int numberOfNodes;
     int numberOfEdges;
+    std::string filename;
+    std::string pathToSave;
+    Graph(int V, int E, Edge edges[]);
+    Graph(int V, int E, Edge edges[], std::string filename, std::string pathToSave);
+    Graph(int V, int E);
+    Node *createAdjListNode(int value, int weight, Node *next);
     void addEdge(int src, int dest, int weight);
     void addEdges(Edge edges[]);
-    int getNumberOfNodes();
-    int getNumberOfEdges();
-    Mst kruskalMST();
-    void generateKSpanningTrees();
+    Graph(const Graph &g2);
 };
 
 class Mst
 {
 public:
     Graph currentGraph;
-    //Graph mstGraph;
-    int countEdges;
+    Graph mstGraph;
     int totalWeight;
+    int startCreatePartition;
     bool isConnected;
-    /* Mst(Graph &gcurr, Graph &gmst, int t, bool c) : currentGraph(gcurr),
-                                                    mstGraph(gmst), totalWeight(t), isConnected(c)
-    {
-    } */
-    Mst(Graph &gcurr, int t, int nEdges, bool c) : currentGraph(gcurr),
-                                                   countEdges(nEdges),
-                                                   totalWeight(t), isConnected(c)
+
+    Mst(Graph &gcurr, Graph &gmst, int t, int startPartition, bool c) : currentGraph(gcurr),
+                                                                        mstGraph(gmst),
+                                                                        totalWeight(t),
+                                                                        startCreatePartition(startPartition),
+                                                                        isConnected(c)
     {
     }
-    /*     Mst(const Mst &mst) : currentGraph(mst.currentGraph),
-                          //mstGraph(mst.mstGraph),
-                          totalWeight(mst.totalWeight),
-                          isConnected(mst.isConnected)
+
+    Mst(bool conn = false) : currentGraph(Graph(0, 0)),
+                             mstGraph(Graph(0, 0)),
+                             totalWeight(0),
+                             startCreatePartition(0),
+                             isConnected(conn)
     {
-    } */
+    }
+
+    Mst(const Mst &mst) : currentGraph(mst.currentGraph),
+                          mstGraph(mst.mstGraph),
+                          totalWeight(mst.totalWeight),
+                          isConnected(mst.isConnected),
+                          startCreatePartition(mst.startCreatePartition)
+    {
+    }
 
     ~Mst()
     {

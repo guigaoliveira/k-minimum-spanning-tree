@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "disjoint_set.hpp"
 
 DisjointSets::DisjointSets(int n)
@@ -31,7 +32,7 @@ int DisjointSets::find(int u)
 }
 
 // Union by rank
-void DisjointSets::merge(int x, int y)
+void DisjointSets::doUnion(int x, int y)
 {
     x = find(x), y = find(y);
 

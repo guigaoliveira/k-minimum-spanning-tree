@@ -7,8 +7,8 @@ class Heap
     int sizeReal;
     T *list;
 
-    void bubbleUp();
-    void bubbleDown();
+    void siftUp();
+    void siftDown();
     void swap(int child, int parent);
     int getLeftChild(int parent);
     int getRightChild(int parent);
@@ -74,11 +74,11 @@ void Heap<T>::insert(T value)
 {
 
     list[sizeReal++] = value;
-    bubbleUp();
+    siftUp();
 }
 
 template <class T>
-void Heap<T>::bubbleUp()
+void Heap<T>::siftUp()
 {
     int child = sizeReal - 1;
     int parent = getParent(child);
@@ -103,13 +103,13 @@ T Heap<T>::remove()
     T value = list[child];
     list[child] = 0;
     sizeReal--;
-    bubbleDown();
+    siftDown();
 
     return value;
 }
 
 template <class T>
-void Heap<T>::bubbleDown()
+void Heap<T>::siftDown()
 {
     int parent = 0;
 
