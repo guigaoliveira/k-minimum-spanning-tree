@@ -163,8 +163,10 @@ Mst kruskalMST(Graph &g)
 {
     int totalWeight = 0;
     int countEdges = 0;
-    Edge *mstListEdges = new Edge[g.numberOfNodes - 1];
+    int countNodes = 0;
     int startCreatePartition = 0;
+    Edge *mstListEdges = new Edge[g.numberOfNodes - 1];
+    bool *mstNodesMarked = new bool[g.numberOfNodes - 1]{false};
 
     Edge *listEdgesSorted = new Edge[g.lengthListEdges];
     Edge *edgesAux = new Edge[g.lengthListEdges];
@@ -194,11 +196,21 @@ Mst kruskalMST(Graph &g)
             countEdges++;
             dsToCheckConnetivity.doUnion(u, v);
             dsKruskal.doUnion(set_u, set_v);
+            if (!mstNodesMarked[u])
+            {
+                mstNodesMarked[u] = true;
+                countNodes++;
+            }
+            if (!mstNodesMarked[v])
+            {
+                mstNodesMarked[v] = true;
+                countNodes++;
+            }
         }
     }
 
     Graph copy = g;
-    Graph mstGraph(g.numberOfNodes, countEdges, mstListEdges);
+    Graph mstGraph(countNodes, countEdges, mstListEdges);
     Mst mst(copy, mstGraph, totalWeight,
             startCreatePartition,
             isConnected(dsToCheckConnetivity, countEdges));
@@ -268,6 +280,7 @@ Graph readGraphFromFile(std::string filename, std::string graphType, std::string
     }
 
     int numberOfVertices = 0;
+    int fileVertices = 0;
     int numberOfEdges = 0;
     Edge *edges;
 
@@ -296,6 +309,7 @@ Graph readGraphFromFile(std::string filename, std::string graphType, std::string
         }
         int n = values[0];
         int m = values[1];
+        fileVertices = n;
         numberOfVertices = n * m;
         numberOfEdges = getTotalEdgesGrid(n, m);
     }
@@ -339,7 +353,7 @@ Graph readGraphFromFile(std::string filename, std::string graphType, std::string
     Graph g(numberOfVertices,
             numberOfEdges,
             edges,
-            std::to_string(numberOfVertices) + graphType,
+            std::to_string(fileVertices) + graphType,
             pathToSave);
     return g;
 }
