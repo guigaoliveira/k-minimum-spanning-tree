@@ -13,7 +13,7 @@ void printList(Node *ptr, int i);
 void createFileForGraph(std::string const &name, Graph g);
 Graph readGraphFromFile(std::string filename, std::string graphType, std::string pathToSave);
 int getRandomNumber(int min, int max);
-Edge *mergeSort(Edge edges[], int inicio, int fim, Edge vetorAux[]);
+void mergeSort(Edge A[], int p, int r);
 Mst kruskalMST(Graph &g);
 void generateKSpanningTrees(Graph &g);
 bool isConnected(DisjointSets &ds, int numberOfEdges);

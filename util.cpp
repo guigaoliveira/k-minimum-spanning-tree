@@ -1,17 +1,14 @@
 #include <fstream>
 #include <random>
-#include "util.hpp"
-#include "heap.hpp"
-#include <memory>
-#include <queue>
-#include <vector>
-#include <algorithm>
-#include <iterator>
 #include <iostream>
-#include <cmath>
+#include "util.hpp"
+#include "min_heap.hpp"
 
-template class Heap<Mst>;
+template class MinHeap<Mst>;
 
+/* 
+    Função que retorna um número aleatório.
+ */
 int getRandomNumber(int min = 1, int max = 20)
 {
     std::random_device rd;
@@ -20,22 +17,30 @@ int getRandomNumber(int min = 1, int max = 20)
     return dis(gen);
 }
 
+/*
+    Função que retorna o número de arestas de um grafo completo de n vértices.
+ */
 int getTotalEdgesComplete(int n)
 {
     return (n * (n - 1)) / 2;
 }
 
+/*
+  Função que retorna o número de arestas de um grafo completo de n*m vértices.
+ */
 int getTotalEdgesGrid(int n, int m)
 {
     return (2 * n * m) - m - n;
 }
 
+/* 
+    Função que cria um grafo completo.
+ */
 Graph createCompleteGraph(int n)
 {
     int numberOfEdges = getTotalEdgesComplete(n);
     Edge edges[numberOfEdges];
     int count = 0;
-
     for (int i = 0; i < n; ++i)
     {
         for (int j = i + 1; j < n; ++j)
@@ -44,11 +49,13 @@ Graph createCompleteGraph(int n)
             count++;
         }
     }
-
     Graph graph(n, numberOfEdges, edges);
     return graph;
 }
 
+/* 
+    Função que cria um grafo grid.
+ */
 Graph createGridGraph(int n, int m)
 {
     int numberOfEdges = getTotalEdgesGrid(n, m);
@@ -77,6 +84,9 @@ Graph createGridGraph(int n, int m)
     return graph;
 }
 
+/*
+    Função para criar um arquivo para um grafo em um formato específico (instância).
+ */
 void createFileForGraph(std::string const &name, Graph g)
 {
     std::ofstream file;
@@ -107,42 +117,64 @@ void createFileForGraph(std::string const &name, Graph g)
     file.close();
 }
 
-void merge(Edge edges[], int inicio, int meio, int fim, Edge vetAux[])
+/*
+    Função que junta arrays ordenados, auxiliar para o mergeSort
+ */
+void merge(Edge A[], int p, int q, int r)
 {
-    int esq = inicio;
-    int dir = meio;
-
-    for (unsigned int i = inicio; i < fim; ++i)
+    int n1 = q - p + 1;
+    int n2 = r - q;
+    Edge L[n1 + 1];
+    Edge R[n2 + 1];
+    for (int i = 0; i < n1; i++)
+        L[i] = A[p + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = A[q + 1 + j];
+    int i = 0;
+    int j = 0;
+    int n = 0;
+    while (i != n1 && j != n2)
     {
-        if ((esq < meio) && ((dir >= fim) || (edges[esq].weight < edges[dir].weight)))
+        if (L[i].weight > R[j].weight)
         {
-
-            vetAux[i] = edges[esq];
-            ++esq;
+            A[p + n] = R[j];
+            j++;
         }
         else
         {
-            vetAux[i] = edges[dir];
-            ++dir;
+            A[p + n] = L[i];
+            i++;
         }
+        n++;
     }
-
-    for (unsigned int i = inicio; i < fim; ++i)
-        edges[i] = vetAux[i];
-}
-
-Edge *mergeSort(Edge edges[], int inicio, int fim, Edge vetorAux[])
-{
-    if ((fim - inicio) >= 2)
+    while (j != n2)
     {
-        int meio = ((inicio + fim) / 2);
-        mergeSort(edges, inicio, meio, vetorAux);
-        mergeSort(edges, meio, fim, vetorAux);
-        merge(edges, inicio, meio, fim, vetorAux);
+        A[p + n] = R[j];
+        j++;
+        n++;
     }
-    return edges;
+    while (i != n1)
+    {
+        A[p + n] = L[i];
+        i++;
+        n++;
+    }
 }
 
+/*
+    Função para verificação de conectividade de um grafo, a partir de um disjoint-set.
+ */
+void mergeSort(Edge A[], int p, int r)
+{
+    if (r > p)
+    {
+        int q;
+        q = (p + r) / 2;
+        mergeSort(A, p, q);
+        mergeSort(A, q + 1, r);
+        merge(A, p, q, r);
+    }
+}
 bool isConnected(DisjointSets &ds, int numberOfEdges)
 {
     int curr = -1;
@@ -159,6 +191,9 @@ bool isConnected(DisjointSets &ds, int numberOfEdges)
     return roots == 1;
 }
 
+/*
+    Função que executa o algoritmo de Krukal para gerar a árvore geradora mínima de um grafo
+ */
 Mst kruskalMST(Graph &g)
 {
     int totalWeight = 0;
@@ -166,28 +201,32 @@ Mst kruskalMST(Graph &g)
     int countNodes = 0;
     int startCreatePartition = 0;
     Edge *mstListEdges = new Edge[g.numberOfNodes - 1];
-    bool *mstNodesMarked = new bool[g.numberOfNodes - 1]{false};
-
     Edge *listEdgesSorted = new Edge[g.lengthListEdges];
-    Edge *edgesAux = new Edge[g.lengthListEdges];
     std::copy(g.listEdges, g.listEdges + g.lengthListEdges, listEdgesSorted);
-    mergeSort(listEdgesSorted, 0, g.lengthListEdges, edgesAux);
+    mergeSort(listEdgesSorted, 0, g.lengthListEdges);
+
+    for (int j = 0; j < g.lengthListEdges; ++j)
+    {
+        std::cout << listEdgesSorted[j].src
+                  << " - " << listEdgesSorted[j].dest
+                  << " - " << listEdgesSorted[j].weight << "\n";
+    }
 
     DisjointSets dsKruskal(g.numberOfNodes);
     DisjointSets dsToCheckConnetivity(g.numberOfNodes);
 
-    for (int i = 0; i < g.lengthListEdges; ++i)
+    for (unsigned int i = 0; countEdges < g.numberOfNodes - 1; ++i)
     {
         int u = listEdgesSorted[i].src;
         int v = listEdgesSorted[i].dest;
         int set_u = dsKruskal.find(u);
         int set_v = dsKruskal.find(v);
-        int state = g.listEdges[i].state;
+        int state = listEdgesSorted[i].state;
 
-        if (state != EdgeState::OPEN)
+        /* if (state != EdgeState::OPEN)
             startCreatePartition++;
         if (state == EdgeState::EXCLUDED)
-            continue;
+            continue; */
         if (set_u != set_v)
         {
             int weight = listEdgesSorted[i].weight;
@@ -196,35 +235,24 @@ Mst kruskalMST(Graph &g)
             countEdges++;
             dsToCheckConnetivity.doUnion(u, v);
             dsKruskal.doUnion(set_u, set_v);
-            if (!mstNodesMarked[u])
-            {
-                mstNodesMarked[u] = true;
-                countNodes++;
-            }
-            if (!mstNodesMarked[v])
-            {
-                mstNodesMarked[v] = true;
-                countNodes++;
-            }
         }
     }
 
-    Graph copy = g;
-    Graph mstGraph(countNodes, countEdges, mstListEdges);
-    Mst mst(copy, mstGraph, totalWeight,
-            startCreatePartition,
+    Graph mstGraph(countEdges + 1, countEdges, mstListEdges);
+    Mst mst(g, mstGraph, totalWeight, startCreatePartition,
             isConnected(dsToCheckConnetivity, countEdges));
     delete[] mstListEdges;
     return mst;
 }
 
-void partition(Mst &Ps, Heap<Mst> &heap)
+/*
+    Função que cria uma partição para o algoritmo de geração de árvores geradoras mínimas.
+ */
+void partition(Mst &Ps, MinHeap<Mst> &heap)
 {
     Graph p = Ps.currentGraph;
     Graph p1 = p;
     Graph p2 = p;
-
-    bool del = false;
 
     for (int i = Ps.startCreatePartition; i < p.lengthListEdges; ++i)
     {
@@ -238,7 +266,9 @@ void partition(Mst &Ps, Heap<Mst> &heap)
         Mst p1Mst = kruskalMST(p1);
 
         if (p1Mst.isConnected && p1Mst.totalWeight > Ps.totalWeight)
+        {
             heap.insert(p1Mst);
+        }
 
         if (del)
             p2.listEdges[i].state = EdgeState::INCLUDED;
@@ -247,12 +277,14 @@ void partition(Mst &Ps, Heap<Mst> &heap)
     }
 }
 
+/*
+    Função para gerar as árvores geradoras mínimas de um grafo.
+ */
 void generateKSpanningTrees(Graph &g)
 {
-    // Inicia a heap com numero maximo de msts para um grafo completo
     std::cout << "Comecando geracao de msts do grafo..."
               << "\n";
-    Heap<Mst> heap(100000);
+    MinHeap<Mst> heap(100000);
     Mst graphMst = kruskalMST(g);
     heap.insert(graphMst);
     while (heap.size())
@@ -261,11 +293,15 @@ void generateKSpanningTrees(Graph &g)
         createFileForGraph(g.pathToSave + "/mst_" +
                                std::to_string(Ps.totalWeight) + "_" + g.filename,
                            Ps.mstGraph);
+        std::cout << "Nova árvore  a ser salva. Peso:" << Ps.totalWeight << "\n";
         partition(Ps, heap);
     }
     std::cout << "Arquivos das msts salvos em: " << g.pathToSave << "\n";
 }
 
+/*
+    Função para ler um arquivo contendo uma instância de um grafo.
+ */
 Graph readGraphFromFile(std::string filename, std::string graphType, std::string pathToSave)
 {
     std::ifstream file;
@@ -280,7 +316,6 @@ Graph readGraphFromFile(std::string filename, std::string graphType, std::string
     }
 
     int numberOfVertices = 0;
-    int fileVertices = 0;
     int numberOfEdges = 0;
     Edge *edges;
 
@@ -309,9 +344,10 @@ Graph readGraphFromFile(std::string filename, std::string graphType, std::string
         }
         int n = values[0];
         int m = values[1];
-        fileVertices = n;
-        numberOfVertices = n * m;
-        numberOfEdges = getTotalEdgesGrid(n, m);
+        std::cout << n;
+        std::cout << m;
+        numberOfVertices = n;
+        numberOfEdges = m;
     }
 
     if (!numberOfVertices || !numberOfEdges)
@@ -353,7 +389,7 @@ Graph readGraphFromFile(std::string filename, std::string graphType, std::string
     Graph g(numberOfVertices,
             numberOfEdges,
             edges,
-            std::to_string(fileVertices) + graphType,
+            std::to_string(numberOfVertices) + graphType,
             pathToSave);
     return g;
 }

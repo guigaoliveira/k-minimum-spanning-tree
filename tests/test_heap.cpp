@@ -1,12 +1,12 @@
 #include <iostream>
-#include "../heap.hpp"
+#include "../min_heap.hpp"
 
-template class Heap<int>;
+template class MinHeap<int>;
 
 int main()
 {
     int arr[] = {7, 2, 3, 4, 6, 5, 10};
-    Heap<int> heap(100);
+    MinHeap<int> heap(100);
     int n = sizeof(arr) / sizeof(int);
     for (int i = 0; i < n; ++i)
     {

@@ -3,32 +3,33 @@
 
 #include <iostream>
 
-enum EdgeState
+struct Node // struct para representar nos
+{
+    int value, weight;
+    Node *next;
+};
+
+enum EdgeState // enum para representar os estados das arestas
 {
     OPEN,
     INCLUDED,
     EXCLUDED,
 };
 
-struct Node
-{
-    int value, weight;
-    Node *next;
-};
-
-struct Edge
+struct Edge // struct para representar arestas
 {
     int src, dest, weight;
     EdgeState state;
 };
 
+
 class Mst;
 
+// Classe para representar um grafo
 class Graph
 {
 public:
     Edge *listEdges;
-    Node **head;
     int lengthListEdges;
     int numberOfNodes;
     int numberOfEdges;
@@ -37,12 +38,12 @@ public:
     Graph(int V, int E, Edge edges[]);
     Graph(int V, int E, Edge edges[], std::string filename, std::string pathToSave);
     Graph(int V, int E);
-    Node *createAdjListNode(int value, int weight, Node *next);
     void addEdge(int src, int dest, int weight);
     void addEdges(Edge edges[]);
     Graph(const Graph &g2);
 };
 
+// Classe para representar uma árvore geradora mínima
 class Mst
 {
 public:
@@ -52,11 +53,12 @@ public:
     int startCreatePartition;
     bool isConnected;
 
-    Mst(Graph &gcurr, Graph &gmst, int t, int startPartition, bool c) : currentGraph(gcurr),
-                                                                        mstGraph(gmst),
-                                                                        totalWeight(t),
-                                                                        startCreatePartition(startPartition),
-                                                                        isConnected(c)
+    Mst(Graph &gcurr, Graph &gmst, int t, int startPartition, bool c)
+        : currentGraph(gcurr),
+          mstGraph(gmst),
+          totalWeight(t),
+          startCreatePartition(startPartition),
+          isConnected(c)
     {
     }
 
@@ -76,9 +78,8 @@ public:
     {
     }
 
-    ~Mst()
-    {
-    }
+    ~Mst() {}
+
     bool operator<(Mst const &mst2)
     {
         return totalWeight < mst2.totalWeight;

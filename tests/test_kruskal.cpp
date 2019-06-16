@@ -29,10 +29,11 @@ int main()
 
     Mst mst = kruskalMST(g);
 
-    for (int i = 0; i < mst.currentGraph.numberOfEdges; ++i)
+    for (int i = 0; i < mst.mstGraph.numberOfEdges; ++i)
     {
-        std::cout << mst.currentGraph.listEdges[i].src
-                  << " - " << mst.currentGraph.listEdges[i].dest << "\n";
+        std::cout << mst.mstGraph.listEdges[i].src
+                  << " - " << mst.mstGraph.listEdges[i].dest
+                  << " - " << mst.mstGraph.listEdges[i].weight << "\n";
     }
 
     std::cout << "Custo: " << mst.totalWeight << "\n";

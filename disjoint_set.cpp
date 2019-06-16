@@ -2,47 +2,35 @@
 #include <iostream>
 #include "disjoint_set.hpp"
 
-DisjointSets::DisjointSets(int n)
+DisjointSets::DisjointSets(int k)
 {
-    // Allocate memory
-    this->n = n;
-    parent = new int[n + 1];
-    rnk = new int[n + 1];
+    n = k;
+    parents = new int[n + 1];
+    ranks = new int[n + 1];
 
-    // Initially, all vertices are in
-    // different sets and have rank 0.
+    // inicia todos os nos com ranks 0 e sendo pais de si mesmo
     for (int i = 0; i <= n; i++)
     {
-        rnk[i] = 0;
-
-        //every element is parent of itself
-        parent[i] = i;
+        ranks[i] = 0;
+        parents[i] = i;
     }
 }
 
-// Find the parent of a node 'u'
-// Path Compression
+// Método para buscar o pai de um no "u" usando compressão de caminho
 int DisjointSets::find(int u)
 {
-    /* Make the parent of the nodes in the path 
-           from u--> parent[u] point to parent[u] */
-    if (u != parent[u])
-        parent[u] = find(parent[u]);
-    return parent[u];
+    if (u != parents[u])
+        parents[u] = find(parents[u]);
+    return parents[u];
 }
 
-// Union by rank
+// Método que faz a união por ranks de dois subconjuntos disjuntos
 void DisjointSets::doUnion(int x, int y)
 {
     x = find(x), y = find(y);
 
-    /* Make tree with smaller height 
-           a subtree of the other tree  */
-    if (rnk[x] > rnk[y])
-        parent[y] = x;
-    else // If rnk[x] <= rnk[y]
-        parent[x] = y;
+    parents[y] = (ranks[x] > ranks[y]) ? x : y;
 
-    if (rnk[x] == rnk[y])
-        rnk[y]++;
+    if (ranks[x] == ranks[y])
+        ranks[y]++;
 }

@@ -13,6 +13,7 @@ int main(int argc, char **argv)
     }
 
     Graph g = readGraphFromFile(argv[1], argv[2], argv[3] ? argv[3] : "msts");
+
     auto start = high_resolution_clock::now();
     generateKSpanningTrees(g);
     auto stop = high_resolution_clock::now();

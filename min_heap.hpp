@@ -1,7 +1,8 @@
 #include <iostream>
 
+// classe que implementa uma heap mínima 
 template <class T>
-class Heap
+class MinHeap
 {
     int sizeLimit;
     int sizeReal;
@@ -15,35 +16,31 @@ class Heap
     int getParent(int child);
 
 public:
-    explicit Heap(int listSize);
-    Heap(const Heap &heap2);
+    explicit MinHeap(int listSize);
+    MinHeap(const MinHeap &heap2);
     void insert(T);
     T remove();
     int size();
 };
 
 template <class T>
-Heap<T>::Heap(int listMaxSize)
+MinHeap<T>::MinHeap(int listMaxSize)  
 {
     sizeLimit = listMaxSize;
     list = new T[sizeLimit];
     sizeReal = 0;
 }
 
+// retorna a quantidade de elementos inseridos na heap
 template <class T>
-Heap<T>::Heap(const Heap &heap2) : sizeLimit(heap2.sizeLimit), sizeReal(heap2.sizeReal)
-{
-    std::copy(heap2.list, heap2.list + sizeLimit, list);
-}
-
-template <class T>
-int Heap<T>::size()
+int MinHeap<T>::size()
 {
     return sizeReal;
 }
 
+// troca um filho com o pai na árvore
 template <class T>
-void Heap<T>::swap(int child, int parent)
+void MinHeap<T>::swap(int child, int parent)
 {
     T temp;
     temp = list[child];
@@ -51,34 +48,39 @@ void Heap<T>::swap(int child, int parent)
     list[parent] = temp;
 }
 
+// retorna o pai de um no 
 template <class T>
-int Heap<T>::getParent(int child)
+int MinHeap<T>::getParent(int child)
 {
     return (child % 2 == 0) ? (child / 2) - 1 : child / 2;
 }
 
+// retorna o elemento na esquerda dado um pai 
 template <class T>
-int Heap<T>::getLeftChild(int parent)
+int MinHeap<T>::getLeftChild(int parent)
 {
     return 2 * parent + 1;
 }
 
+// retorna o elemento na direita dado um pai 
 template <class T>
-int Heap<T>::getRightChild(int parent)
+int MinHeap<T>::getRightChild(int parent)
 {
     return 2 * parent + 2;
 }
 
+// insere um elemento na heap
 template <class T>
-void Heap<T>::insert(T value)
+void MinHeap<T>::insert(T value)
 {
 
     list[sizeReal++] = value;
     siftUp();
 }
 
+// sobe os elementos que precisam para que a heap seja mínima. 
 template <class T>
-void Heap<T>::siftUp()
+void MinHeap<T>::siftUp()
 {
     int child = sizeReal - 1;
     int parent = getParent(child);
@@ -92,11 +94,13 @@ void Heap<T>::siftUp()
     }
 }
 
+// remove um elemento da heap e o retorna 
 template <class T>
-T Heap<T>::remove()
+T MinHeap<T>::remove()
 {
     if (!sizeReal)
         return false;
+
     int child = sizeReal - 1;
     swap(child, 0);
 
@@ -108,12 +112,13 @@ T Heap<T>::remove()
     return value;
 }
 
+// desce os elementos que precisam para que a heap seja mínima.
 template <class T>
-void Heap<T>::siftDown()
+void MinHeap<T>::siftDown()
 {
     int parent = 0;
 
-    while (1)
+    while (true)
     {
         int left = getLeftChild(parent);
         int right = getRightChild(parent);
