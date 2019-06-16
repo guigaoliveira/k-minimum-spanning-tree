@@ -29,7 +29,10 @@ void DisjointSets::doUnion(int x, int y)
 {
     x = find(x), y = find(y);
 
-    parents[y] = (ranks[x] > ranks[y]) ? x : y;
+    if (ranks[x] > ranks[y])
+        parents[y] = x;
+    else
+        parents[x] = y;
 
     if (ranks[x] == ranks[y])
         ranks[y]++;

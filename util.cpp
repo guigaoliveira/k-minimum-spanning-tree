@@ -1,8 +1,4 @@
-#include <fstream>
-#include <random>
-#include <iostream>
 #include "util.hpp"
-#include "min_heap.hpp"
 
 template class MinHeap<Mst>;
 
@@ -120,61 +116,47 @@ void createFileForGraph(std::string const &name, Graph g)
 /*
     Função que junta arrays ordenados, auxiliar para o mergeSort
  */
-void merge(Edge A[], int p, int q, int r)
+void merge(Edge edges[], int start, int mid, int end, Edge aux[])
 {
-    int n1 = q - p + 1;
-    int n2 = r - q;
-    Edge L[n1 + 1];
-    Edge R[n2 + 1];
-    for (int i = 0; i < n1; i++)
-        L[i] = A[p + i];
-    for (int j = 0; j < n2; j++)
-        R[j] = A[q + 1 + j];
-    int i = 0;
-    int j = 0;
-    int n = 0;
-    while (i != n1 && j != n2)
+    int left = start;
+    int right = mid;
+
+    for (unsigned int i = start; i < end; ++i)
     {
-        if (L[i].weight > R[j].weight)
+        if ((left < mid) && ((right >= end) || (edges[left].weight < edges[right].weight)))
         {
-            A[p + n] = R[j];
-            j++;
+
+            aux[i] = edges[left];
+            ++left;
         }
         else
         {
-            A[p + n] = L[i];
-            i++;
+            aux[i] = edges[right];
+            ++right;
         }
-        n++;
     }
-    while (j != n2)
-    {
-        A[p + n] = R[j];
-        j++;
-        n++;
-    }
-    while (i != n1)
-    {
-        A[p + n] = L[i];
-        i++;
-        n++;
-    }
+
+    for (unsigned int i = start; i < end; ++i)
+        edges[i] = aux[i];
+}
+
+/*
+    Função do algoritmo de ordenação mergeSort.
+ */
+void mergeSort(Edge edges[], int start, int end, Edge aux[])
+{
+    if ((end - start) < 2)
+        return;
+
+    int mid = ((start + end) / 2);
+    mergeSort(edges, start, mid, aux);
+    mergeSort(edges, mid, end, aux);
+    merge(edges, start, mid, end, aux);
 }
 
 /*
     Função para verificação de conectividade de um grafo, a partir de um disjoint-set.
  */
-void mergeSort(Edge A[], int p, int r)
-{
-    if (r > p)
-    {
-        int q;
-        q = (p + r) / 2;
-        mergeSort(A, p, q);
-        mergeSort(A, q + 1, r);
-        merge(A, p, q, r);
-    }
-}
 bool isConnected(DisjointSets &ds, int numberOfEdges)
 {
     int curr = -1;
@@ -202,15 +184,9 @@ Mst kruskalMST(Graph &g)
     int startCreatePartition = 0;
     Edge *mstListEdges = new Edge[g.numberOfNodes - 1];
     Edge *listEdgesSorted = new Edge[g.lengthListEdges];
+    Edge *edgesAux = new Edge[g.lengthListEdges];
     std::copy(g.listEdges, g.listEdges + g.lengthListEdges, listEdgesSorted);
-    mergeSort(listEdgesSorted, 0, g.lengthListEdges);
-
-    for (int j = 0; j < g.lengthListEdges; ++j)
-    {
-        std::cout << listEdgesSorted[j].src
-                  << " - " << listEdgesSorted[j].dest
-                  << " - " << listEdgesSorted[j].weight << "\n";
-    }
+    mergeSort(listEdgesSorted, 0, g.lengthListEdges, edgesAux);
 
     DisjointSets dsKruskal(g.numberOfNodes);
     DisjointSets dsToCheckConnetivity(g.numberOfNodes);
@@ -221,16 +197,16 @@ Mst kruskalMST(Graph &g)
         int v = listEdgesSorted[i].dest;
         int set_u = dsKruskal.find(u);
         int set_v = dsKruskal.find(v);
-        int state = listEdgesSorted[i].state;
+        EdgeState state = listEdgesSorted[i].state;
 
-        /* if (state != EdgeState::OPEN)
+        if (state != EdgeState::OPEN)
             startCreatePartition++;
         if (state == EdgeState::EXCLUDED)
-            continue; */
-        if (set_u != set_v)
+            continue;
+        if (set_u != set_v || state == EdgeState::INCLUDED)
         {
             int weight = listEdgesSorted[i].weight;
-            mstListEdges[countEdges] = {u, v, weight, listEdgesSorted[i].state};
+            mstListEdges[countEdges] = {u, v, weight, state};
             totalWeight += weight;
             countEdges++;
             dsToCheckConnetivity.doUnion(u, v);
@@ -252,7 +228,6 @@ void partition(Mst &Ps, MinHeap<Mst> &heap)
 {
     Graph p = Ps.currentGraph;
     Graph p1 = p;
-    Graph p2 = p;
 
     for (int i = Ps.startCreatePartition; i < p.lengthListEdges; ++i)
     {
@@ -271,9 +246,7 @@ void partition(Mst &Ps, MinHeap<Mst> &heap)
         }
 
         if (del)
-            p2.listEdges[i].state = EdgeState::INCLUDED;
-
-        p1 = p2;
+            p1.listEdges[i].state = EdgeState::INCLUDED;
     }
 }
 

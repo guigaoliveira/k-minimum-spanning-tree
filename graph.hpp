@@ -1,7 +1,7 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
-#include <iostream>
+#include <string>
 
 struct Node // struct para representar nos
 {

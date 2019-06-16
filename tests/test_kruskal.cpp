@@ -1,15 +1,12 @@
 #include "../graph.hpp"
 #include "../util.hpp"
 
-// Driver program to test above functions
+// lembra de tirar a adaptação do krukal para testar esse arquivo
 int main()
 {
-    /* Let us create above shown weighted
-       and unidrected graph */
     int V = 9, E = 14;
     Graph g(V, E);
 
-    //  making above shown graph
     g.addEdge(0, 1, 4);
     g.addEdge(0, 7, 8);
     g.addEdge(1, 2, 8);

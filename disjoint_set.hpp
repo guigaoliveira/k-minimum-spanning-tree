@@ -1,7 +1,7 @@
 #ifndef DISJOINT_SET_HPP
 #define DISJOINT_SET_HPP
 
-class DisjointSets
+class DisjointSets // classe que implementa disjoint-sets (união-busca)
 {
 private:
     int *parents, *ranks;

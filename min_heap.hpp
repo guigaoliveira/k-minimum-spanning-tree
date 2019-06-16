@@ -1,5 +1,3 @@
-#include <iostream>
-
 // classe que implementa uma heap mínima 
 template <class T>
 class MinHeap
